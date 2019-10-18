@@ -5,13 +5,15 @@
 ## AUTHORS:    L. Hong and R. Martin
 ##-----------------------------------------------------------------------------------
 
+#Information to generate datasets. 
+
 set.seed(53)
 alpha <- 3
 lambda <- 0.2
-n <- c(600, 400, 200)
-N <- 500
+n <- c(600, 400, 200) #sample sizes 
+N <- 500 #
 h <- 0.2
-X <- rlnorm(n[1], meanlog=1, sdlog=1)
+X <- rlnorm(n[1], meanlog=1, sdlog=1) #log normal distribtion 
 shape <- n*alpha+1
 rate1 <- lambda+sum(X)
 rate2 <- lambda+sum(X[1:400])
