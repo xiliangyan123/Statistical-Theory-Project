@@ -1,0 +1,64 @@
+ST 502 Project outline or pseudo template:
+
+Your chosen article should have a simulation study section.  This is the part 
+of the paper your group is responsible for reproducing. 
+
+To do so, the general outline of steps are:
+
+(1) Generate 1 synthetic data set from the model presented in the paper
+(2) Estimate the model as described in the paper (i.e., MLE, EM, MCMC,...)
+(3) Evaluate the estimated model (i.e., RMSE, AIC, BIC,... on test set)
+(4) Repeat steps (1)-(3) N times (larger N is better, but may not be feasible)
+(5) Use the output from (4) to produce plots and/or tables as in the paper
+
+You can use the authors' code for steps (1)-(3), and you are encouraged to do so
+for complicated statistical models and estimation procedures.  However, you will
+be responsible for writing the architecture  of your simulation study.  What 
+that means is that you should write three script files:
+(a) simulate.r  # This script contains code for generating the data 
+(b) run_file.r  # This script contains code for running the estimation procedure
+(c) out_file.r  # This script contains code for producing the plots/tables
+
+The code contained in simulate.r and run_file.r can include some of the authors'
+code, but the out_file.r must be exclusively written by your group members.  
+The output from simulate.r should be saved and then loaded by run_file.r.  Next,
+the output from run_file.r should be saved and then loaded by out_file.r.  And,
+the output from out_file.r should be saved, and then loaded (or copy-and-pasted)
+into your LaTex file to be compiled into the pdf file of the write-up of your 
+project.
+
+Next, your project submission should include a workflow file, which includes 
+ALL of the steps for reproducing your computations and plots/tables.  For 
+example, it will look something like:
+
+-------------------------------------------------------------------------------
+# This is the workflow to reproduce the results of the ST 502 project for group
+# members Student 1, Student 2, and Student 3.
+
+for seed in {1..N}
+do
+Rscript simulate.r arg_1 arg_2 ...
+Rscript run_file.r arg_1 arg_2 ...
+done
+
+Rscript out_file.r arg_1 arg_2 ...
+-------------------------------------------------------------------------------
+
+Note: This will require knowledge of how an interpretable language works 
+outside of a GUI environment (i.e., you should know how to run R outside of 
+Rstudio).  This is not hard, but is important for understanding how programming 
+skills fit into the broader application of problem solving in industry and 
+academia.  
+
+Finally, your project write-up will include a 4-10 page summary describing the
+statistical model, estimation procedure, and inference on your simulation study.
+You will also need to send me all script files INCLUDING your workflow file.
+Everything, including your LaTex files, should be zipped and emailed to me by 
+the last day of classes.  However, you are responsible for pre-compiling your 
+LaTex file prior to zipping.
+
+Visit me periodically during office hours as your group progresses through your 
+project.  THERE IS NO REASON THAT YOUR GROUP SHOULD NOT GET FULL POINTS ON YOUR
+PROJECT BY THE END OF THE SEMESTER.  If you learn nothing else in grad school, 
+learn to be resourceful.  It will make you more employable, and a more 
+productive member of society. 
