@@ -5,6 +5,7 @@
 ## only estimating the mean 
 
 ## defining parameters
+library(ggplot2)
 set.seed(53)
 n <- c(600, 400, 200)
 
@@ -13,39 +14,21 @@ X1 <- rlnorm(n[1], meanlog=1, sdlog=1)
 X2 <- rlnorm(n[2], meanlog=1, sdlog=1)
 X3 <- rlnorm(n[3], meanlog=1, sdlog=1)
 
-# grid1 <- seq(0,29.95/3,.05/3)
-# grid2 <- seq(0,19.95/2,.05/2)
-# grid3 <- seq(0,9.95,.05)
-
-#X should be concentrating around 4.48. 
-# Not sure if we need this, since we have it below.(In histogram)
-# dpost1 <- plot(grid1, dlnorm(grid1, 1, 1), type = "l", xlab = "Mean Parameter Estimate", ylab = "f(x)",
-#                main = "Parameter Estimation under Bayesian Framework")
-# lines(density(X1), col = "Red", lty = 2, lwd = 5)
-# points(4.48, 0, pch = "X")
-# dpost2 <- plot(grid2, dlnorm(grid2, 1, 1), type = "l", xlab = "Mean Parameter Estimate", ylab = "f(x)",
-#                main = "Parameter Estimation under Bayesian Framework")
-# lines(density(X2), col = "Green", lty = 3, lwd = 5)
-# points(4.48, 0, pch = "X")
-# dpost3 <- plot(grid3, dlnorm(grid3, 1, 1), type = "l", xlab = "Mean Parameter Estimate", ylab = "f(x)",
-#                main = "Parameter Estimation under Bayesian Framework")
-# lines(density(X3), col = "Blue", lty = 4, lwd = 5)
-# points(4.48, 0, pch = "X")
-
 ## Trying to calculate VaR and CTE
+## Full Bayesian Analysis - True Values
 VaR.hat <- qlnorm(0.95, meanlog=1, sdlog=1)
 d <- function(x){exp(-(log(x)-1)^2/2)/(sqrt(2*pi))}
 CTE.hat <- integrate(d, lower=VaR.hat, upper=Inf)$value/0.05
 
+## Number of iterations and vectors to hold data. 
 N <- 10000
 keepers <- matrix(0, N, 3)
 keepers2 <- matrix(0, N, 3)
 keepers3 <- matrix(0, N, 3)
 #mean
 
-#we know arithmetic mean and variance. 
-#result found on wikipedia.(Lognormal Distribution)
-#want to use this to get the meanlog = 1 and sdlog = 1 for VaR.star
+## result found on wikipedia.(Lognormal Distribution)
+## want to use this to get the meanlog = 1 and sdlog = 1 for VaR.star
 location <- log(1/sqrt(1+1))
 shape <- sqrt(log(1+1))
 
@@ -76,42 +59,87 @@ for (k in 1:N) {
   keepers3[k,] <- c(mu3,VaR.star3,CTE.star3)
 }
 
-## Plots for sample size of 600
-plot(1:N, keepers[,1], type="l", main="Trace plot for Credibility Estimator")
-hist(keepers[,1], main="Plot of the predicted mean")
-points(mean(X1), 0, pch = "X") #predictive mean
+#Plots of the posterior means
+plot(density(keepers[,1], from = 4, to = 6), 
+     main="Mean Estimates", xlab = "Mu", ylim = c(0, 2), 
+     lwd = 5, col = "Green")
+par(new=T)
+plot(density(keepers2[,1], from = 4, to = 6), 
+     main = "", xlab = "", ylim = c(0,2), 
+     lty = 3, lwd = 5, col = "Red")
+par(new=T)
+plot(density(keepers3[,1], from = 4, to = 6), 
+     main = "", xlab = "", ylim = c(0,2), 
+     lty = 2, lwd = 5, col = "Gold")
+par(new=T)
+points(4.48, 0, pch = "X")
 
-plot(1:N, keepers[,2], type="l", main="Trace plot for VaR")
-hist(keepers[,2], main="Plot of the VaR estimate")
-points(VaR.hat, 0, pch = "X") #predicted VaR estimate
+#Plots of the VaR for different sample sizes
+plot(density(keepers[,2], from = 0, to = 100), 
+     main="Var Estimates", xlab = "VaR", ylim = c(0,0.2), 
+     lwd = 5, col = "Green")
+par(new=T)
+plot(density(keepers2[,2], from = 0, to = 100), 
+     main = "", xlab = "", ylim = c(0,0.2), 
+     lty = 3, lwd = 5, col = "Red")
+par(new=T)
+plot(density(keepers3[,2], from = 0, to = 100), 
+     main = "", xlab = "", ylim = c(0,0.2), 
+     lty = 2, lwd = 5, col = "Gold")
+par(new=T)
+points(VaR.hat, 0, pch = "X")
 
-plot(1:N, keepers[,3], type="l", main="Trace plot for CTE")
-hist(keepers[,3], main="Plot of the CTE estimate")
-points(CTE.hat, 0, pch = "X") #predicted CTE estimate
+#Plots of the CTE for different sample sizes. 
+plot(density(keepers[,3], from = 0, to = 100), 
+     main="CTE Estimates", xlab = "Mu", ylim = c(0, 0.10), 
+     lwd = 5, col = "Green")
+par(new=T)
+plot(density(keepers2[,3], from = 0, to = 100), 
+     main = "", xlab = "", ylim = c(0,0.1), 
+     lty = 3, lwd = 5, col = "Red")
+par(new=T)
+plot(density(keepers3[,3], from = 0, to = 100), 
+     main = "", xlab = "", ylim = c(0,0.1), 
+     lty = 2, lwd = 5, col = "Gold")
+par(new=T)
+points(CTE.hat, 0, pch = "X")
 
-## Plots for sample size of 400
-plot(1:N, keepers2[,1], type="l", main="Trace plot for Credibility Estimator")
-hist(keepers2[,1], main="Plot of the predicted mean")
-points(mean(X2), 0, pch = "X") #predictive mean
-
-plot(1:N, keepers2[,2], type="l", main="Trace plot for VaR")
-hist(keepers2[,2], main="Plot of the VaR estimate")
-points(VaR.hat, 0, pch = "X") #predicted VaR estimate
-
-plot(1:N, keepers2[,3], type="l", main="Trace plot for CTE")
-hist(keepers2[,3], main="Plot of the CTE estimate")
-points(CTE.hat, 0, pch = "X") #predicted CTE estimate
-
-## Plots for sample size of 200
-plot(1:N, keepers3[,1], type="l", main="Trace plot for Credibility Estimator")
-hist(keepers3[,1], main="Plot of the predicted mean")
-points(mean(X3), 0, pch = "X") #predictive mean
-
-plot(1:N, keepers3[,2], type="l", main="Trace plot for VaR")
-hist(keepers3[,2], main="Plot of the VaR estimate")
-points(VaR.hat, 0, pch = "X") #predicted VaR estimate
-
-plot(1:N, keepers3[,3], type="l", main="Trace plot for CTE")
-hist(keepers3[,3], main="Plot of the CTE estimate")
-points(CTE.hat, 0, pch = "X") #predicted CTE estimate
-
+# ## Plots for sample size of 600
+# plot(1:N, keepers[,1], type="l", main="Trace plot for Credibility Estimator", ylab = "Mu")
+# hist(keepers[,1], main="Mean Estimate with n = 600", xlab = "Mu", prob = TRUE) 
+# points(mean(X1), 0, pch = "X") #predictive mean
+## Histogram Plots
+# plot(1:N, keepers[,2], type="l", main="Trace plot for VaR", ylab = "VaR")
+# hist(keepers[,2], main="VaR estimate with n = 600", xlab = "VaR", prob = TRUE)
+# points(VaR.hat, 0, pch = "X") #predicted VaR estimate
+# 
+# plot(1:N, keepers[,3], type="l", main="Trace plot for CTE", ylab = "CTE")
+# hist(keepers[,3], main="CTE estimate with n = 600", xlab = "CTE", prob = TRUE)
+# points(CTE.hat, 0, pch = "X") #predicted CTE estimate
+# 
+# ## Plots for sample size of 400
+# plot(1:N, keepers2[,1], type="l", main="Trace plot for Credibility Estimator", ylab = "Mu")
+# hist(keepers2[,1], main="Mean Estimate with n = 400", xlab = "Mu", prob = TRUE)
+# points(mean(X2), 0, pch = "X") #predictive mean
+# 
+# plot(1:N, keepers2[,2], type="l", main="Trace plot for VaR", ylab = "VaR")
+# hist(keepers2[,2], main="VaR estimate with n = 400", xlab = "VaR", prob = TRUE)
+# points(VaR.hat, 0, pch = "X") #predicted VaR estimate
+# 
+# plot(1:N, keepers2[,3], type="l", main="Trace plot for CTE", ylab = "CTE")
+# hist(keepers2[,3], main="CTE estimate with n = 400", xlab = "CTE", prob = TRUE)
+# points(CTE.hat, 0, pch = "X") #predicted CTE estimate
+# points(mean(CTE.star), 0, pch = "O")
+# 
+# ## Plots for sample size of 200
+# plot(1:N, keepers3[,1], type="l", main="Trace plot for Credibility Estimator", ylab = "Mu")
+# hist(keepers3[,1], main="Mean Estimate with n = 200", xlab = "Mu", prob = TRUE)
+# points(mean(X3), 0, pch = "X") #predictive mean
+# 
+# plot(1:1000, keepers3[c(1:1000),2], type="l", main="Trace plot for VaR", ylab = "VaR")
+# hist(keepers3[c(1:1000),2], main="VaR estimate with n = 200", xlab = "VaR", prob = TRUE)
+# points(VaR.hat, 0, pch = "X") #predicted VaR estimate
+# 
+# plot(1:N, keepers3[,3], type="l", main="Trace plot for CTE", ylab = "CTE")
+# hist(keepers3[,3], main="CTE estimate with n = 200", xlab = "CTE", prob = TRUE)
+# points(CTE.hat, 0, pch = "X") #predicted CTE estimate
