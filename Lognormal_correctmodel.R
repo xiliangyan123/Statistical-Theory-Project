@@ -5,7 +5,6 @@
 ## only estimating the mean 
 
 ## defining parameters
-library(ggplot2)
 set.seed(53)
 n <- c(600, 400, 200)
 
@@ -14,53 +13,57 @@ X1 <- rlnorm(n[1], meanlog=1, sdlog=1)
 X2 <- rlnorm(n[2], meanlog=1, sdlog=1)
 X3 <- rlnorm(n[3], meanlog=1, sdlog=1)
 
-## Trying to calculate VaR and CTE
-## Full Bayesian Analysis - True Values
-VaR.hat <- qlnorm(0.95, meanlog=1, sdlog=1)
-d <- function(x){exp(-(log(x)-1)^2/2)/(sqrt(2*pi))}
-CTE.hat <- integrate(d, lower=VaR.hat, upper=Inf)$value/0.05
 
-## Number of iterations and vectors to hold data. 
+## Calculate VaR and CTE
+## Full Bayesian Analysis - True Values
+True.mu <- exp(1 + 0.50)
+True.VaR <- qlnorm(0.95, meanlog=1, sdlog=1)
+d <- function(x){exp(-(log(x)-1)^2/2)/(sqrt(2*pi))}
+True.CTE <- integrate(d, lower=True.VaR, upper=Inf)$value/0.05
+
+## Number of iterations and matrices to hold parameter estimates
 N <- 10000
-keepers <- matrix(0, N, 3)
+keepers1 <- matrix(0, N, 3)
 keepers2 <- matrix(0, N, 3)
 keepers3 <- matrix(0, N, 3)
-#mean
 
 ## result found on wikipedia.(Lognormal Distribution)
 ## want to use this to get the meanlog = 1 and sdlog = 1 for VaR.star
 location <- log(1/sqrt(1+1))
 shape <- sqrt(log(1+1))
 
+## Generating parameter values for n = 600
 for (i in 1:N) {
   Y <- rlnorm(n[1], meanlog=1, sdlog=1)
   mu <- mean(Y)
   Z <- rlnorm(n[1], location, shape)
-  VaR.star <- qlnorm(0.95, meanlog = mean(Z), sdlog = sqrt(var(Z)))
-  CTE.star <- integrate(d, lower=VaR.star, upper=Inf)$value/0.05
-  keepers[i,] <- c(mu,VaR.star,CTE.star)
+  est.VaR <- qlnorm(0.95, meanlog = mean(Z), sdlog = sqrt(var(Z)))
+  est.CTE <- integrate(d, lower=est.VaR, upper=Inf)$value/0.05
+  keepers1[i,] <- c(mu,est.VaR,est.CTE)
 }
 
+## Generating parameter values for n = 400
 for (j in 1:N) {
   Y2 <- rlnorm(n[2], meanlog=1, sdlog=1)
   mu2 <- mean(Y2)
   Z2 <- rlnorm(n[2], location, shape)
-  VaR.star2 <- qlnorm(0.95, meanlog = mean(Z2), sdlog = sqrt(var(Z2)))
-  CTE.star2 <- integrate(d, lower=VaR.star2, upper=Inf)$value/0.05
-  keepers2[j,] <- c(mu2,VaR.star2,CTE.star2)
+  est.VaR2 <- qlnorm(0.95, meanlog = mean(Z2), sdlog = sqrt(var(Z2)))
+  est.CTE2 <- integrate(d, lower=est.VaR2, upper=Inf)$value/0.05
+  keepers2[j,] <- c(mu2,est.VaR2,est.CTE2)
 }
 
+## Generating parameter values for n = 200
 for (k in 1:N) {
   Y3 <- rlnorm(n[3], meanlog=1, sdlog=1)
   mu3 <- mean(Y3)
   Z3 <- rlnorm(n[3], location, shape)
-  VaR.star3 <- qlnorm(0.95, meanlog = mean(Z3), sdlog = sqrt(var(Z3)))
-  CTE.star3 <- integrate(d, lower=VaR.star3, upper=Inf)$value/0.05
-  keepers3[k,] <- c(mu3,VaR.star3,CTE.star3)
+  est.VaR3 <- qlnorm(0.95, meanlog = mean(Z3), sdlog = sqrt(var(Z3)))
+  est.CTE3 <- integrate(d, lower=est.VaR3, upper=Inf)$value/0.05
+  keepers3[k,] <- c(mu3,est.VaR3,est.CTE3)
 }
 
 #Plots of the posterior means
-plot(density(keepers[,1], from = 4, to = 6), 
+plot(density(keepers1[,1], from = 4, to = 6), 
      main="Mean Estimates", xlab = "Mu", ylim = c(0, 2), 
      lwd = 5, col = "Green")
 par(new=T)
@@ -70,12 +73,16 @@ plot(density(keepers2[,1], from = 4, to = 6),
 par(new=T)
 plot(density(keepers3[,1], from = 4, to = 6), 
      main = "", xlab = "", ylim = c(0,2), 
-     lty = 2, lwd = 5, col = "Gold")
+     lty = 2, lwd = 5, col = "Brown")
 par(new=T)
-points(4.48, 0, pch = "X")
+points(True.mu, 0, pch = "X")
+legend("topright", title = "Sample Sizes", 
+       legend =c("n=600", "n=400", "n=200"), 
+       col = c("Green", "Red", "Brown"),
+       bg="lightblue", lwd=5, lty=1:3)
 
 #Plots of the VaR for different sample sizes
-plot(density(keepers[,2], from = 0, to = 100), 
+plot(density(keepers1[,2], from = 0, to = 100), 
      main="Var Estimates", xlab = "VaR", ylim = c(0,0.2), 
      lwd = 5, col = "Green")
 par(new=T)
@@ -85,13 +92,17 @@ plot(density(keepers2[,2], from = 0, to = 100),
 par(new=T)
 plot(density(keepers3[,2], from = 0, to = 100), 
      main = "", xlab = "", ylim = c(0,0.2), 
-     lty = 2, lwd = 5, col = "Gold")
+     lty = 2, lwd = 5, col = "Brown")
 par(new=T)
-points(VaR.hat, 0, pch = "X")
+points(True.VaR, 0, pch = "X")
+legend("topright", title = "Sample Sizes", 
+       legend =c("n=600", "n=400", "n=200"), 
+       col = c("Green", "Red", "Brown"),
+       bg="lightblue", lwd=5, lty=1:3)
 
 #Plots of the CTE for different sample sizes. 
-plot(density(keepers[,3], from = 0, to = 100), 
-     main="CTE Estimates", xlab = "Mu", ylim = c(0, 0.10), 
+plot(density(keepers1[,3], from = 0, to = 100), 
+     main="CTE Estimates", xlab = "CTE", ylim = c(0, 0.10), 
      lwd = 5, col = "Green")
 par(new=T)
 plot(density(keepers2[,3], from = 0, to = 100), 
@@ -100,9 +111,13 @@ plot(density(keepers2[,3], from = 0, to = 100),
 par(new=T)
 plot(density(keepers3[,3], from = 0, to = 100), 
      main = "", xlab = "", ylim = c(0,0.1), 
-     lty = 2, lwd = 5, col = "Gold")
+     lty = 2, lwd = 5, col = "Brown")
 par(new=T)
-points(CTE.hat, 0, pch = "X")
+points(True.CTE, 0, pch = "X")
+legend("topright", title = "Sample Sizes", 
+       legend =c("n=600", "n=400", "n=200"), 
+       col = c("Green", "Red", "Brown"),
+       bg="lightblue", lwd=5, lty=1:3)
 
 # ## Plots for sample size of 600
 # plot(1:N, keepers[,1], type="l", main="Trace plot for Credibility Estimator", ylab = "Mu")
