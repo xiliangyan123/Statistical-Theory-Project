@@ -115,4 +115,8 @@ points(True.CTE, 0, pch = "X")
 legend("topright", title = "Sample Sizes", 
        legend =c("n=600", "n=400", "n=200"), 
        col = c("Green", "Red", "Brown"),
+<<<<<<< HEAD
        bg="lightblue", lwd=5, lty=1:3)
+=======
+       bg="lightblue", lwd=5, lty=1:3)
+>>>>>>> b25416ecfa6c44bc8e48984f7ed3bdf36922cf24
