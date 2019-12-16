@@ -1,6 +1,6 @@
 ##-----------------------------------------------------------------------------------
 ## TITLE:     Model correctlt specified, Bayesian versus credibility estimation,
-##            and Gibbs posterio
+##            and Gibbs posterior
 ##
 ## AUTHORS:    L. Hong and R. Martin
 ##-----------------------------------------------------------------------------------
@@ -21,7 +21,7 @@ h <- 0.2 #what is h correnspond for?
 #X <- rlnorm(n[1], meanlog=1, sdlog=1) #generate random number log normal distribution
 X <- rgamma(n[1], shape=3, rate=lambda)
 shape <- n*alpha+1
-rate1 <- lambda+sum(X) #RATE for n = 600
+rate1 <- lambda+sum(X) #rate for n = 600
 rate2 <- lambda+sum(X[1:400]) #rate for n=400
 rate3 <- lambda+sum(X[1:200]) #rate for n=200
 mean(X) #credibility mean
@@ -51,12 +51,10 @@ curve(dpost6, from=0.15, to=0.25, xlab="parameter", ylab="posterior density", lt
 # Posteriors of the predictive mean
 #------------------------------------
 
-
-#produce random # from gamma w/ different alpha and betha
+#produce random # from gamma w/ different alpha and beta
 Y1 <- rgamma(N, shape=shape[1], rate=rate1) 
 Y2 <- rgamma(N, shape=shape[2], rate=rate2)
 Y3 <- rgamma(N, shape=shape[3], rate=rate3)
-
 
 mu1 <- alpha/Y1
 mu2 <- alpha/Y2
@@ -199,18 +197,19 @@ w6 <- 1/(2*var(X6))
 w4 <- 1/(2*var(X4))
 w2<- 1/(2*var(X2))
 w <- cbind(w6,w4,w2)
-sigma <- 1/(2*n*w+1)
-
+sigma <- n/((n/(var(X)) + 1))
 
 #---------------------------------------------------
 # plots of the posterior for different sample sizes
 #---------------------------------------------------
-?dnorm
-dpost1 <- function(x){dnorm(x, mean=mu6, sd=sigma[1])}
-curve(dpost1, from=3, to=6, xlab="parameter", ylab="posterior density", lty=1)
-dpost2 <- function(x){dnorm(x, mean=mu4, sd=sigma[2])}
-curve(dpost2, from=3, to=6, xlab="", ylab="", lty=2, add=TRUE)
-dpost3 <- function(x){dnorm(x, mean=mu2, sd=sigma[3])}
-curve(dpost3, from=3, to=6, xlab="", ylab="", lty=3, add=TRUE)
-points(4.48 , 0, pch = "X")
+dpost1 <- function(x){dlnorm(x, meanlog=mu6, sdlog=sigma[1])}
+curve(dpost1, xlab="parameter", ylab="posterior density", lty=1)
+par(new=T)
+dpost2 <- function(x){dlnorm(x, meanlog=mu4, sdlog =sigma[2])}
+curve(dpost2, xlab="", ylab="", lty=2, add=TRUE)
+par(new=T)
+dpost3 <- function(x){dlnorm(x, meanlog=mu2, sdlog =sigma[3])}
+curve(dpost3, xlab="", ylab="", lty=3, add=TRUE)
+par(new = T)
+# points(4.48 , 0, pch = "X")
 

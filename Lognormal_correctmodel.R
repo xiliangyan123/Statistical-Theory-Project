@@ -2,9 +2,8 @@
 # Fitting A Correct Model 
 # Lognormal Data / Lognormal Model 
 ##################################
-## only estimating the mean 
 
-## defining parameters
+## defining sample size 
 set.seed(53)
 n <- c(600, 400, 200)
 
@@ -12,7 +11,6 @@ n <- c(600, 400, 200)
 X1 <- rlnorm(n[1], meanlog=1, sdlog=1) 
 X2 <- rlnorm(n[2], meanlog=1, sdlog=1)
 X3 <- rlnorm(n[3], meanlog=1, sdlog=1)
-
 
 ## Calculate VaR and CTE
 ## Full Bayesian Analysis - True Values
@@ -118,43 +116,3 @@ legend("topright", title = "Sample Sizes",
        legend =c("n=600", "n=400", "n=200"), 
        col = c("Green", "Red", "Brown"),
        bg="lightblue", lwd=5, lty=1:3)
-
-# ## Plots for sample size of 600
-# plot(1:N, keepers[,1], type="l", main="Trace plot for Credibility Estimator", ylab = "Mu")
-# hist(keepers[,1], main="Mean Estimate with n = 600", xlab = "Mu", prob = TRUE) 
-# points(mean(X1), 0, pch = "X") #predictive mean
-## Histogram Plots
-# plot(1:N, keepers[,2], type="l", main="Trace plot for VaR", ylab = "VaR")
-# hist(keepers[,2], main="VaR estimate with n = 600", xlab = "VaR", prob = TRUE)
-# points(VaR.hat, 0, pch = "X") #predicted VaR estimate
-# 
-# plot(1:N, keepers[,3], type="l", main="Trace plot for CTE", ylab = "CTE")
-# hist(keepers[,3], main="CTE estimate with n = 600", xlab = "CTE", prob = TRUE)
-# points(CTE.hat, 0, pch = "X") #predicted CTE estimate
-# 
-# ## Plots for sample size of 400
-# plot(1:N, keepers2[,1], type="l", main="Trace plot for Credibility Estimator", ylab = "Mu")
-# hist(keepers2[,1], main="Mean Estimate with n = 400", xlab = "Mu", prob = TRUE)
-# points(mean(X2), 0, pch = "X") #predictive mean
-# 
-# plot(1:N, keepers2[,2], type="l", main="Trace plot for VaR", ylab = "VaR")
-# hist(keepers2[,2], main="VaR estimate with n = 400", xlab = "VaR", prob = TRUE)
-# points(VaR.hat, 0, pch = "X") #predicted VaR estimate
-# 
-# plot(1:N, keepers2[,3], type="l", main="Trace plot for CTE", ylab = "CTE")
-# hist(keepers2[,3], main="CTE estimate with n = 400", xlab = "CTE", prob = TRUE)
-# points(CTE.hat, 0, pch = "X") #predicted CTE estimate
-# points(mean(CTE.star), 0, pch = "O")
-# 
-# ## Plots for sample size of 200
-# plot(1:N, keepers3[,1], type="l", main="Trace plot for Credibility Estimator", ylab = "Mu")
-# hist(keepers3[,1], main="Mean Estimate with n = 200", xlab = "Mu", prob = TRUE)
-# points(mean(X3), 0, pch = "X") #predictive mean
-# 
-# plot(1:1000, keepers3[c(1:1000),2], type="l", main="Trace plot for VaR", ylab = "VaR")
-# hist(keepers3[c(1:1000),2], main="VaR estimate with n = 200", xlab = "VaR", prob = TRUE)
-# points(VaR.hat, 0, pch = "X") #predicted VaR estimate
-# 
-# plot(1:N, keepers3[,3], type="l", main="Trace plot for CTE", ylab = "CTE")
-# hist(keepers3[,3], main="CTE estimate with n = 200", xlab = "CTE", prob = TRUE)
-# points(CTE.hat, 0, pch = "X") #predicted CTE estimate
