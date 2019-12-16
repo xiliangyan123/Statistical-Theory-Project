@@ -222,9 +222,7 @@ points(9.411, 0, pch = "X")
 legend("topleft", title = "Sample Sizes", legend =c("n=600", "n=400", "n=200"), 
        col = c("Green", "Red", "Brown"), bg="lightblue", lwd=5, lty=1:3)
 
-# newline
-# newline
-# newline
+##
 
 # Estimating CTE of the posterior 
 
